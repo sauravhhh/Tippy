@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tippy 💸</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        body {
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            text-align: center;
+            font-size: 42px;
+            font-weight: 300;
+            margin-bottom: 30px;
+            color: #2c3e50;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            letter-spacing: -1px;
+        }
+        
+        .input-group {
+            margin-bottom: 25px;
+        }
+        
+        label {
+            display: block;
+            font-size: 14px;
+            margin-bottom: 8px;
+            color: #7f8c8d;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        input {
+            width: 100%;
+            padding: 14px;
+            font-size: 16px;
+            border: 2px solid #ecf0f1;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        input:focus {
+            outline: none;
+            border-color: #3498db;
+            background: #f8f9fa;
+        }
+        
+        .tip-buttons {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+        
+        .tip-btn {
+            padding: 12px;
+            border: 2px solid #ecf0f1;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            color: #34495e;
+        }
+        
+        .tip-btn:hover {
+            background: #f8f9fa;
+            transform: translateY(-2px);
+        }
+        
+        .tip-btn.active {
+            background: #3498db;
+            color: white;
+            border-color: #3498db;
+            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+        }
+        
+        .people-control {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .people-control input {
+            width: 80px;
+            text-align: center;
+            font-weight: 600;
+        }
+        
+        .counter-btn {
+            width: 40px;
+            height: 40px;
+            border: 2px solid #ecf0f1;
+            background: white;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 20px;
+            font-weight: 300;
+            transition: all 0.3s ease;
+            color: #34495e;
+        }
+        
+        .counter-btn:hover {
+            background: #f8f9fa;
+            transform: scale(1.1);
+        }
+        
+        .counter-btn:active {
+            transform: scale(0.95);
+        }
+        
+        .results {
+            margin: 30px 0;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+        
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 18px 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .result-item:first-child {
+            background: #ffffff;
+            border-bottom: 1px solid #f1f3f5;
+        }
+        
+        .result-item:nth-child(2) {
+            background: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .result-item:last-child {
+            background: #f1f3f5;
+        }
+        
+        .result-label {
+            font-size: 14px;
+            color: #6c757d;
+            font-weight: 500;
+        }
+        
+        .result-value {
+            font-size: 24px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .share-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(56, 239, 125, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .share-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(56, 239, 125, 0.4);
+        }
+        
+        .share-btn:active {
+            transform: translateY(0);
+        }
+        
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            font-size: 14px;
+            color: #7f8c8d;
+        }
+        
+        .footer-content {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+        
+        .heart {
+            color: #e74c3c;
+        }
+        
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #2c3e50;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 1000;
+        }
+        
+        .toast.show {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Tippy 💸</h1>
+        
+        <div class="input-group">
+            <label>Bill Amount (₹)</label>
+            <input type="number" id="billAmount" placeholder="0.00" step="0.01">
+        </div>
+        
+        <div class="input-group">
+            <label>Tip Percentage</label>
+            <div class="tip-buttons">
+                <button class="tip-btn" data-tip="5">5%</button>
+                <button class="tip-btn active" data-tip="10">10%</button>
+                <button class="tip-btn" data-tip="15">15%</button>
+                <button class="tip-btn" data-tip="20">20%</button>
+                <button class="tip-btn" data-tip="25">25%</button>
+                <button class="tip-btn" data-tip="0">No Tip</button>
+            </div>
+            <input type="number" id="customTip" placeholder="Custom %" min="0" max="100">
+        </div>
+        
+        <div class="input-group">
+            <label>Number of People</label>
+            <div class="people-control">
+                <button class="counter-btn" id="decreasePeople">−</button>
+                <input type="number" id="numPeople" value="1" min="1">
+                <button class="counter-btn" id="increasePeople">+</button>
+            </div>
+        </div>
+        
+        <div class="results">
+            <div class="result-item">
+                <span class="result-label">Tip Amount / Person</span>
+                <span class="result-value">₹<span id="tipAmount">0.00</span></span>
+            </div>
+            <div class="result-item">
+                <span class="result-label">Total / Person</span>
+                <span class="result-value">₹<span id="totalAmount">0.00</span></span>
+            </div>
+            <div class="result-item">
+                <span class="result-label">Grand Total</span>
+                <span class="result-value">₹<span id="grandTotal">0.00</span></span>
+            </div>
+        </div>
+        
+        <button class="share-btn" id="shareBtn">Share Results</button>
+    </div>
+    
+    <footer>
+        <div class="footer-content">
+            Made with <span class="heart">❤️</span> by Sauravhhh
+        </div>
+    </footer>
+    
+    <div class="toast" id="toast"></div>
+    
+    <script>
+        // Get elements
+        const billAmountInput = document.getElementById('billAmount');
+        const customTipInput = document.getElementById('customTip');
+        const numPeopleInput = document.getElementById('numPeople');
+        const tipAmountDisplay = document.getElementById('tipAmount');
+        const totalAmountDisplay = document.getElementById('totalAmount');
+        const grandTotalDisplay = document.getElementById('grandTotal');
+        const shareBtn = document.getElementById('shareBtn');
+        const tipButtons = document.querySelectorAll('.tip-btn');
+        const decreasePeopleBtn = document.getElementById('decreasePeople');
+        const increasePeopleBtn = document.getElementById('increasePeople');
+        const toast = document.getElementById('toast');
+        
+        let currentTipPercentage = 10;
+        
+        // Event listeners
+        billAmountInput.addEventListener('input', calculateTip);
+        customTipInput.addEventListener('input', handleCustomTip);
+        numPeopleInput.addEventListener('input', calculateTip);
+        shareBtn.addEventListener('click', shareResults);
+        
+        tipButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                tipButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                currentTipPercentage = parseInt(button.dataset.tip);
+                customTipInput.value = '';
+                calculateTip();
+            });
+        });
+        
+        decreasePeopleBtn.addEventListener('click', () => {
+            const currentValue = parseInt(numPeopleInput.value) || 1;
+            if (currentValue > 1) {
+                numPeopleInput.value = currentValue - 1;
+                calculateTip();
+            }
+        });
+        
+        increasePeopleBtn.addEventListener('click', () => {
+            const currentValue = parseInt(numPeopleInput.value) || 1;
+            numPeopleInput.value = currentValue + 1;
+            calculateTip();
+        });
+        
+        function handleCustomTip() {
+            const customValue = parseFloat(customTipInput.value);
+            if (customValue >= 0 && customValue <= 100) {
+                tipButtons.forEach(btn => btn.classList.remove('active'));
+                currentTipPercentage = customValue;
+                calculateTip();
+            }
+        }
+        
+        function calculateTip() {
+            const billAmount = parseFloat(billAmountInput.value) || 0;
+            const numPeople = parseInt(numPeopleInput.value) || 1;
+            
+            if (billAmount <= 0 || numPeople <= 0) {
+                tipAmountDisplay.textContent = '0.00';
+                totalAmountDisplay.textContent = '0.00';
+                grandTotalDisplay.textContent = '0.00';
+                return;
+            }
+            
+            const tipAmount = billAmount * (currentTipPercentage / 100);
+            const totalAmount = billAmount + tipAmount;
+            const tipPerPerson = tipAmount / numPeople;
+            const totalPerPerson = totalAmount / numPeople;
+            
+            tipAmountDisplay.textContent = tipPerPerson.toFixed(2);
+            totalAmountDisplay.textContent = totalPerPerson.toFixed(2);
+            grandTotalDisplay.textContent = totalAmount.toFixed(2);
+        }
+        
+        function shareResults() {
+            const billAmount = parseFloat(billAmountInput.value) || 0;
+            const numPeople = parseInt(numPeopleInput.value) || 1;
+            const tipAmount = parseFloat(tipAmountDisplay.textContent) || 0;
+            const totalPerPerson = parseFloat(totalAmountDisplay.textContent) || 0;
+            const grandTotal = parseFloat(grandTotalDisplay.textContent) || 0;
+            
+            const shareText = `Tippy 💸 Results:\n\n` +
+                             `Bill Amount: ₹${billAmount.toFixed(2)}\n` +
+                             `Tip Percentage: ${currentTipPercentage}%\n` +
+                             `Number of People: ${numPeople}\n\n` +
+                             `Tip Amount per Person: ₹${tipAmount.toFixed(2)}\n` +
+                             `Total per Person: ₹${totalPerPerson.toFixed(2)}\n` +
+                             `Grand Total: ₹${grandTotal.toFixed(2)}`;
+            
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Tippy 💸 Results',
+                    text: shareText
+                }).catch(() => {
+                    // User cancelled share
+                });
+            } else {
+                // Fallback: copy to clipboard
+                navigator.clipboard.writeText(shareText).then(() => {
+                    showToast('Results copied to clipboard!');
+                }).catch(() => {
+                    showToast('Unable to share results');
+                });
+            }
+        }
+        
+        function showToast(message) {
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+        
+        calculateTip();
+    </script>
+</body>
+  </html>
